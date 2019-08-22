@@ -5,6 +5,7 @@ import { Directive, DoCheck, ElementRef, Inject, Input, PLATFORM_ID, Renderer2 }
 import { DragToSelectConfig } from './models';
 import { CONFIG } from './tokens';
 import { calculateBoundingClientRect } from './utils';
+import { Subject } from 'rxjs';
 
 @Directive({
   selector: '[dtsSelectItem]',
@@ -16,10 +17,21 @@ import { calculateBoundingClientRect } from './utils';
 export class SelectItemDirective implements DoCheck {
   private _boundingClientRect;
 
-  selected = false;
+  private _selected = false;
+
+  public onchanged = new Subject<boolean>();
 
   @Input()
   dtsSelectItem;
+
+  public get selected() {
+    return this._selected;
+  }
+
+  public set selected(value: boolean) {
+    this._selected = value;
+    this.onchanged.next(value);
+  }
 
   get value() {
     return this.dtsSelectItem ? this.dtsSelectItem : this;
